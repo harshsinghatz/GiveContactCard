@@ -1,0 +1,17 @@
+{
+  "name": "give-contact-card",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx ts-node src/index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "ts-node": "^10.9.1",
+    "twitter-api-v2": "^1.12.9"
+  }
+}
