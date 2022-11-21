@@ -8,6 +8,7 @@ import {
   readLastTweet,
   userFormatTweet, Mention
 } from './util';
+import { JimpTest } from './jimp';
 
 const DEFAULT_PARAMS = { "since_id": "" };
 
@@ -40,4 +41,5 @@ const main = async () => {
   }
 }
 
-main();
+// main();
+JimpTest();
