@@ -17,6 +17,7 @@ import fs from 'fs';
 interface Mention{
   id:string;
   text:string;
+  author_id:string;
 }
 
 const writeLastTweet=(data:object)=>fs.writeFileSync(lastTweetPath,JSON.stringify(data));
@@ -44,7 +45,7 @@ const getAuthUser=async()=>{
 
 const getUser=async(id:string)=>{
   try{
-    return twitterClient.v2.get(`users/${id}`);
+    return twitterClient.v2.get(`users/${id}?user.fields=description,location,name,profile_image_url,url,username`);
   }catch(err){
     console.log(err);
     return {};
@@ -62,13 +63,14 @@ const getAllMentions=async()=>{
     params["since_id"]=last_tweet_id;
   }
 
-  const res=await twitterClient.v2.get(`users/${data.id}/mentions${params.since_id?"?since_id="+params.since_id:""}`);
+  const res=await twitterClient.v2.get(`users/${data.id}/mentions${params.since_id?"?since_id="+params.since_id+"&tweet.fields=author_id":"?tweet.fields=author_id"}`);
+  console.log(res);
   const allMentions=res.data;
-  console.log(res,data);
+  
   try{
     allMentions.forEach(async(mention:Mention,index:number)=>{
-      // const aboutUser=await getUser(mention.id);
-      // console.log(aboutUser);
+      const aboutUser=await getUser(mention.author_id);
+      console.log(aboutUser);
       if(index===0){
         writeLastTweet({
           since_id:mention.id
