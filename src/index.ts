@@ -52,6 +52,24 @@ const getUser=async(id:string)=>{
   }
 }
 
+// POST /tweets
+const replyToTweet=async(replyTweetId:string,tweet:string)=>{
+  try{
+    return twitterClient.v2.post(`tweets`,{"text":tweet,"reply":{"in_reply_to_tweet_id":replyTweetId}});
+  }catch(err){
+    console.log(err);
+    return {};
+  }
+}
+
+const userFormatTweet=(data:{name:string;description:string;location:string;url:string;})=>{
+  return `Name: ${data.name}
+About: ${data.description}
+From: ${data.location}
+Contact Me👇
+${data.url}`;
+}
+
 // GET /2/users/:id/mentions
 const getAllMentions=async()=>{
   const {data}= await getAuthUser();
@@ -70,6 +88,10 @@ const getAllMentions=async()=>{
   try{
     allMentions.forEach(async(mention:Mention,index:number)=>{
       const aboutUser=await getUser(mention.author_id);
+      const data=aboutUser.data;
+      // Reply to user
+      await replyToTweet(mention.id,userFormatTweet(data));
+
       console.log(aboutUser);
       if(index===0){
         writeLastTweet({
