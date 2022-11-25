@@ -5,7 +5,9 @@
   "main": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "ts-node ./src/index.ts"
+    "dev": "ts-node-dev index.ts",
+    "build": "tsc",
+    "start": "node dist"
   },
   "author": "",
   "license": "ISC",
@@ -13,6 +15,8 @@
     "dotenv": "^16.0.3",
     "jimp": "^0.16.2",
     "ts-node": "^10.9.1",
-    "twitter-api-v2": "^1.12.9"
+    "ts-node-dev": "^2.0.0",
+    "twitter-api-v2": "^1.12.9",
+    "typescript": "^4.9.3"
   }
 }
