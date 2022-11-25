@@ -46,7 +46,7 @@ export const replyToTweet = async (
     return twitterClient.v2.post(`tweets`, {
       "text": tweet,
       "reply": { "in_reply_to_tweet_id": replyTweetId },
-      "media": { "media_ids": [media_id] },
+      ...(!!media_id?{"media": { "media_ids": [media_id] }}:{}),
     });
   } catch (err) {
     console.log(err);

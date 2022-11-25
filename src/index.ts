@@ -32,7 +32,7 @@ const main = async () => {
       const {media_id_string:mediaId}= await getMediaID(outputImage);
       //@ts-ignore
       // const mediaId=media.media_id;
-      console.log("media id:",mediaId);
+      console.log("media id:",mediaId,outputImage);
       await replyToTweet(mention.id, userFormatTweet(data),mediaId);
       console.log("Replying to tweet id:",mention.id);
 
@@ -48,4 +48,6 @@ const main = async () => {
   }
 }
 
-main();
+setInterval(()=>{
+  main();
+},5000);
