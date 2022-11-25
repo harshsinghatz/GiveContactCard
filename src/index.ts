@@ -1,14 +1,15 @@
 import {
   getUser,
   replyToTweet,
-  getAuthUserMentions
+  getAuthUserMentions,
+  getMediaID
 } from './twitter/helper';
 import {
   writeLastTweet,
   readLastTweet,
   userFormatTweet, Mention
 } from './util';
-import { JimpTest } from './jimp';
+import { giveModifiedImage } from './jimp';
 
 const DEFAULT_PARAMS = { "since_id": "" };
 
@@ -26,7 +27,13 @@ const main = async () => {
 
     allMentions.forEach(async (mention: Mention, index: number) => {
       const { data } = await getUser(mention.author_id);
-      await replyToTweet(mention.id, userFormatTweet(data));
+      const outputImage=await giveModifiedImage(data.name,data.profile_image_url);
+      //@ts-ignore
+      const {media_id_string:mediaId}= await getMediaID(outputImage);
+      //@ts-ignore
+      // const mediaId=media.media_id;
+      console.log("media id:",mediaId);
+      await replyToTweet(mention.id, userFormatTweet(data),mediaId);
       console.log("Replying to tweet id:",mention.id);
 
       if (index === 0) {
@@ -41,5 +48,4 @@ const main = async () => {
   }
 }
 
-// main();
-JimpTest();
+main();
