@@ -10,11 +10,12 @@ import {
   userFormatTweet, Mention
 } from './util';
 import { giveModifiedImage } from './jimp';
+import { getSinceId, setSinceId } from './redis';
 
 const DEFAULT_PARAMS = { "since_id": "" };
 
 const main = async () => {
-  const { since_id: last_tweet_id } = readLastTweet();
+  const last_tweet_id = await getSinceId();
   const params = DEFAULT_PARAMS;
 
   if (last_tweet_id) {
@@ -41,6 +42,7 @@ const main = async () => {
         writeLastTweet({
           since_id: mention.id
         });
+        await setSinceId(mention.id);
       }
     })
   } catch (err) {
@@ -51,3 +53,6 @@ const main = async () => {
 setInterval(()=>{
   main();
 },5000);
+
+// getSinceId();
+// setSinceId("28347328478");
