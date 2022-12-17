@@ -2,15 +2,15 @@ import {
   getUser,
   replyToTweet,
   getAuthUserMentions,
-  getMediaID
+  getMediaID,
 } from './twitter/helper';
 import {
-  writeLastTweet,
-  readLastTweet,
   userFormatTweet, Mention
 } from './util';
 import { giveModifiedImage } from './jimp';
 import { getSinceId, setSinceId } from './redis';
+import { getCustomUserInfo } from './prisma/helper';
+import { saveBase64Image } from './util';
 
 const DEFAULT_PARAMS = { "since_id": "" };
 
@@ -28,20 +28,32 @@ const main = async () => {
 
     allMentions.forEach(async (mention: Mention, index: number) => {
       const { data } = await getUser(mention.author_id);
-      const outputImage=await giveModifiedImage(data.name,data.profile_image_url);
+      let outputImage;
+      let tweet;
+      let outputImageBase64;
+      [outputImageBase64,tweet]= await getCustomUserInfo(mention.author_id);
+
+      if(outputImageBase64){
+        outputImage = await saveBase64Image(outputImageBase64); 
+      }
+
+      if(!outputImage){
+        outputImage = await giveModifiedImage(data.name,data.profile_image_url);
+      }
+
+      if(!tweet){
+        tweet=userFormatTweet(data);
+      }
+
+      // @ts-ignore
+      let {media_id_string:mediaId}= await getMediaID(outputImage);
       //@ts-ignore
-      const {media_id_string:mediaId}= await getMediaID(outputImage);
-      //@ts-ignore
-      // const mediaId=media.media_id;
       console.log("media id:",mediaId,outputImage);
-      await replyToTweet(mention.id, userFormatTweet(data),mediaId);
+      await replyToTweet(mention.id, tweet ,mediaId);
       console.log("Replying to tweet id:",mention.id);
 
       if (index === 0) {
         console.log("Updating last tweet...")
-        writeLastTweet({
-          since_id: mention.id
-        });
         await setSinceId(mention.id);
       }
     })
@@ -50,9 +62,6 @@ const main = async () => {
   }
 }
 
-setInterval(()=>{
+setInterval(async()=>{
   main();
-},5000);
-
-// getSinceId();
-// setSinceId("28347328478");
+},10000);

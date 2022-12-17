@@ -2,7 +2,6 @@ import twitterClient from "./index";
 import fs from "fs";
 
 // @desc get authenticated user
-
 /**
  * @desc Get the authenticated user
  */
